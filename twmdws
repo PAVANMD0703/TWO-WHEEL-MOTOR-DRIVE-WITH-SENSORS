@@ -1,0 +1,95 @@
+// Define analog input pins
+const int xAxisPin = A0;
+const int yAxisPin = A1;
+const int m1p1 = 9;
+const int m1p2 = 8;
+const int m2p1 = 11;
+const int m2p2 = 10;
+const int trigPin = 3;
+const int echoPin = 5;
+long duration;
+int distance_cm;
+const int led = 13;
+
+void setup() {
+// Initialize serial communication
+Serial.begin(9600);
+pinMode(m1p1,OUTPUT);
+pinMode(m1p2,OUTPUT);
+pinMode(m2p1,OUTPUT);
+pinMode(m2p2,OUTPUT);
+pinMode(trigPin, OUTPUT);
+pinMode(echoPin, INPUT);
+pinMode(led, OUTPUT);
+}
+
+void loop() {
+// Read the analog values from the joystick
+int xValue = analogRead(xAxisPin);
+int yValue = analogRead(yAxisPin);
+
+Serial.print("X-axis: ");
+Serial.print(xValue);
+Serial.print("\tY-axis: ");
+Serial.println(yValue);
+
+digitalWrite(trigPin, LOW);
+delayMicroseconds(2);
+
+digitalWrite(trigPin, HIGH);
+delayMicroseconds(10);
+digitalWrite(trigPin, LOW);
+
+duration = pulseIn(echoPin, HIGH);
+distance_cm = duration * 0.034 / 2;
+
+Serial.print("Distance: ");
+Serial.print(distance_cm);
+Serial.println(" cm");
+
+if(distance_cm > 25){
+digitalWrite(led,LOW);
+if(xValue > 510){
+digitalWrite(m1p1,HIGH);
+digitalWrite(m1p2,LOW);
+digitalWrite(m2p1,HIGH);
+digitalWrite(m2p2,LOW);
+}
+
+else if(yValue < 495){
+digitalWrite(m1p1,LOW);
+digitalWrite(m1p2,LOW);
+digitalWrite(m2p1,HIGH);
+digitalWrite(m2p2,LOW);
+}
+
+else if(yValue > 515){
+digitalWrite(m1p1,HIGH);
+digitalWrite(m1p2,LOW);
+digitalWrite(m2p1,LOW);
+digitalWrite(m2p2,LOW);
+}
+
+else{
+digitalWrite(m1p1,LOW);
+digitalWrite(m1p2,LOW);
+digitalWrite(m2p1,LOW);
+digitalWrite(m2p2,LOW);
+}
+}
+else if(distance_cm < 25){
+digitalWrite(m1p1,LOW);
+digitalWrite(m1p2,LOW);
+digitalWrite(m2p1,LOW);
+digitalWrite(m2p2,LOW);
+digitalWrite(led,HIGH);
+}
+
+if(xValue < 490){
+digitalWrite(m1p1,LOW);
+digitalWrite(m1p2,HIGH);
+digitalWrite(m2p1,LOW);
+digitalWrite(m2p2,HIGH);
+}
+
+}
